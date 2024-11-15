@@ -16,6 +16,10 @@
         <p id="errorMessage"></p>
     </div>
 
-    <script src="script.js"></script>
+    <script src="java.js"></script>
+    <!--
+    Dom: This was here first below and I corrected the name
+    script src="script.js"></script> <!-->
+    
 </body>
 </html>

@@ -1,0 +1,13 @@
+Connection To DB
+Dom: Unlike your 1161 project, javascript runs in the browswe on the client or server side (Node.js)
+
+In Java we would use JDBC to connect directly to a database. For the Database, I used XAMPP to launch the server 
+
+How to Download js
+
+https://youtu.be/NlC10atHTQc?si=JWx4MZCIy8M3YZkZ 
+
+
+
+
+

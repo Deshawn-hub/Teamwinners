@@ -13,7 +13,7 @@
             <h2>Menu</h2>
             <ul>
                 <li onclick="showSection('inventory')" id="inventoryTab">Inventory</li>
-                <li onclick="showSection('customer')" id="customerTab">Customer/Sale</li>
+                <li onclick="showSection('customer')" id="customerTab">Customer</li>
                 <li onclick="showSection('reports')" id="reportsTab">Reports</li>
             </ul>
         </aside>
@@ -23,9 +23,9 @@
             <!--Inventory tab-->
             <div id="inventory" class="section active">
                 <h1>Inventory</h1>
-                <button type="button" onclick="toggleDropdown('addProductDropdown')">Add/Update product</button>
+                <button type="button" onclick="toggleDropdown('addProductDropdown')">Add/Update Product</button>
                 <div id="addProductDropdown" class="dropdown-content">
-                    <p>Enter name, quantity and cost of the product to add.</p>
+                    <p>Enter name, quantity, and cost of the product to add.</p>
                     <form id="addProductForm">
                         <label for="addName">Name:</label>
                         <input type="text" id="addName" name="name" required>
@@ -41,24 +41,24 @@
                 </div>
 
                 <!--Delete product-->
-                <button type="button" onclick="toggleDropdown('deleteProductDropdown')">Delete product</button>
+                <button type="button" onclick="toggleDropdown('deleteProductDropdown')">Delete Product</button>
                 <div id="deleteProductDropdown" class="dropdown-content">
                     <p>Enter name and quantity of product to delete.</p>
-                    <form id="addProductForm">
-                        <label for="addName">Name:</label>
-                        <input type="text" id="addName" name="name" required>
+                    <form id="deleteProductForm">
+                        <label for="deleteName">Name:</label>
+                        <input type="text" id="deleteName" name="name" required>
                         
-                        <label for="addQuantity">Quantity:</label>
-                        <input type="number" id="addQuantity" name="quantity" required>
+                        <label for="deleteQuantity">Quantity:</label>
+                        <input type="number" id="deleteQuantity" name="quantity" required>
                         
                         <button type="submit">Submit</button>
                     </form>
                 </div>
 
                 <!--View product-->
-                <button type="button" onclick="toggleDropdown('viewProductDropdown')">View product</button>
+                <button type="button" onclick="toggleDropdown('viewProductDropdown')">View Product</button>
                 <div id="viewProductDropdown" class="dropdown-content">
-                    <h2>Inventory has</h2>
+                    <h2>Inventory List</h2>
                     <table id="inventoryTable">
                         <thead>
                             <tr>
@@ -67,44 +67,23 @@
                                 <th>Cost</th>
                             </tr>
                         </thead>
+                        <tbody></tbody>
                     </table>
                 </div>
-
             </div>
 
             <!--Customer tab-->
             <div id="customer" class="section">
-                <h1>Add Customer</h1>
-                <div id="addCustomer" class="addcustomer">
-                    <p>Enter name and email of customer to add.</p>
-                    <form id="addProductForm">
-                        <label for="custName">Name:</label>
-                        <input type="text" id="custName" name="custName" required>
-                        
-                        <label for="addEmail">Email:</label>
-                        <input type="text" id="addEmail" name="email" required>
-                        
-                        <button type="submit">Submit</button>
-                    </form>
-
-                </div>
-                <hr>
-                <h1>Add Sale</h1>
-                <div>
-                    <p>Enter details of sale made.</details></p>
-                    <form id="sale">
-                        <label for="custName">Customer Name:</label>
-                        <input type="text" id="sellcustomer" name="custName" required>
-                        
-                        <label for="product">Product:</label>
-                        <input type="text" id="sellproduct" name="sellproduct" required>
-
-                        <label for="quantity">Quantity:</label>
-                        <input type="number" id="sellquantity" name="sellquantity" required>
-                        
-                        <button type="submit">Submit</button>
-                    </form>
-                </div>
+                <h1>Customer</h1>
+                <form id="addCustomerForm">
+                    <label for="custName">Name:</label>
+                    <input type="text" id="custName" name="custName" required>
+                    
+                    <label for="addEmail">Email:</label>
+                    <input type="email" id="addEmail" name="email" required>
+                    
+                    <button type="submit">Submit</button>
+                </form>
             </div>
 
             <div id="reports" class="section">
@@ -114,6 +93,6 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="java.js"></script> <!-- Moved to the end of the body -->
 </body>
 </html>
