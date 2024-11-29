@@ -46,6 +46,10 @@ mysqli_close($conn);
 </head>
 
 <body id="reportspage">
+<a href="dashboard.html" id="sidebarLink" class="sidebar-link" title="Back">
+            <img src="img/R-removebg-preview.png" class="icon" alt=""><span class="Sp">Back</span>
+        </a>
+
   <div class="report-Container">
      
      <!-- this represents the container for the bar chart-->
