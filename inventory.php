@@ -1,9 +1,9 @@
 <?php 
 
-    $host = 'localhost'; /// replace 
-    $username = 'lab5_user'; //replace
-    $password = 'password123';//replace
-    $dbname = 'group3'; //replace
+    $host = 'localhost';
+    $username = 'root';
+    $password = '';
+    $dbname = 'inventory database';
 
 
     $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
@@ -32,11 +32,11 @@
 
         $stmt = $conn->prepare("INSERT INTO customers (`First Name`, `Last Name`, `Phone No.`, `Email`, `Address`) VALUES (:firstname, :lastname, :phone, :email, :address)");
 
-        $stmt->bindParam(':firstname', $firstname);
-        $stmt->bindParam(':lastname', $lastname);
-        $stmt->bindParam(':phone', $phone);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':address', $address);
+        $stmt->bindParam(':firstname', $firstname, PDO::PARAM_STR);
+        $stmt->bindParam(':lastname', $lastname, PDO::PARAM_STR);
+        $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':address', $address, PDO::PARAM_STR);
 
         if ($stmt->execute()) {
             $response = 'Customer added successfully';
@@ -67,8 +67,8 @@
                 
                 $stmt = $conn->prepare("UPDATE inventory SET `Total In Stock` = :newStock WHERE `Name of Item` = :itemName");
                 // Bind the parameters to the prepared statement
-                $stmt->bindParam(':newStock', $newStock);
-                $stmt->bindParam(':itemName', $itemName);
+                $stmt->bindParam(':newStock', $newStock, PDO::PARAM_INT);
+                $stmt->bindParam(':itemName', $itemName, PDO::PARAM_STR);
                 
                 
         
@@ -82,10 +82,10 @@
                  $stmt = $conn->prepare("INSERT INTO inventory ( `Name of Item`, `Item Category`, `Unit Price`, `Total In Stock`)
                             VALUES (:itemName, :category, :price, :quantity)");
             // Bind the parameters to the prepared statement
-                $stmt->bindParam(':itemName', $itemName);
-                $stmt->bindParam(':category', $itemCategory);
-                $stmt->bindParam(':price', $unitPrice); 
-                $stmt->bindParam(':quantity',  $quantity);
+                $stmt->bindParam(':itemName', $itemName, PDO::PARAM_STR);
+                $stmt->bindParam(':category', $itemCategory, PDO::PARAM_STR);
+                $stmt->bindParam(':price', $unitPrice, PDO::PARAM_INT); 
+                $stmt->bindParam(':quantity',  $quantity, PDO::PARAM_INT);
 
                 if ($stmt->execute()) {
                     $response = 'Product Added successfully in inventory';
@@ -102,15 +102,51 @@
         $stmt = $conn->prepare("DELETE FROM customers WHERE `User ID` = :user_id AND `Last Name` = :lastname");
 
         $stmt->bindParam(':user_id', $userID, PDO::PARAM_INT);
-        $stmt->bindParam(':lastname', $lastname);
+        $stmt->bindParam(':lastname', $lastname, PDO::PARAM_STR);
 
         if ($stmt->execute()) {
             $response = 'Customer deleted successfully';
         } else {
             $response = 'Failed to delete customer';
         }
-    } 
-    elseif ($action === 'record_sale') {
+    } elseif ($action === 'view_Customer') {
+        // Fetch inventory from the database
+        $stmt = $conn->query("SELECT `First Name`, `Last Name`, `User ID`, `Phone No.`, `Email`, `Address` FROM customers");
+    
+        $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Start building the HTML table
+        echo "<table>
+                <thead>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>User ID</th>
+                        <th>Phone No.</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>";
+    
+        // Loop through each item and display in table rows
+        foreach ($customers as $customer) {
+            echo "<tr>
+                    <td>{$customer['First Name']}</td>
+                    <td>{$customer['Last Name']}</td>
+                    <td>{$customer['User ID']}</td>
+                    <td>{$customer['Phone No.']}</td>
+                    <td>{$customer['Email']}</td>
+                    <td>{$customer['Address']}</td>
+                  </tr>";
+        }
+    
+        // Close the table tags
+        echo "</tbody></table>";
+    
+
+
+}elseif ($action === 'record_sale') {
         // Record a sale
         $customerFirstName = $_POST['customerFirstName'];
         $customerLastName = $_POST['customerLastName'];
@@ -179,16 +215,39 @@
         }
 
     } elseif ($action === 'view_inventory') {
-        // Fetch inventory
-        $stmt = $conn->query("SELECT * FROM inventory");
-
+        // Fetch inventory from the database
+        $stmt = $conn->query("SELECT `Item ID`, `Name of Item`, `Item Category`, `Unit Price`, `Total In Stock`, `Total Sold` FROM inventory");
+    
         $inventory = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Print the inventory in a simple tabular format
-        $response = "Item ID | Item Name | Category | Unit Price | In Stock | Sold | Remaining\n";
+    
+        // Start building the HTML table
+        echo "<table>
+                <thead>
+                    <tr>
+                        <th>Item ID</th>
+                        <th>Name of Item</th>
+                        <th>Item Category</th>
+                        <th>Unit Price</th>
+                        <th>Total In Stock</th>
+                        <th>Total Sold</th>
+                    </tr>
+                </thead>
+                <tbody>";
+    
+        // Loop through each item and display in table rows
         foreach ($inventory as $item) {
-            $response .= "{$item['Item ID']} | {$item['Item Name']} | {$item['Item Category']} | {$item['Unit Price']} | {$item['Total In Stock']} | {$item['Total Sold']} | {$item['Total Remaining']}\n";
+            echo "<tr>
+                    <td>{$item['Item ID']}</td>
+                    <td>{$item['Name of Item']}</td>
+                    <td>{$item['Item Category']}</td>
+                    <td>{$item['Unit Price']}</td>
+                    <td>{$item['Total In Stock']}</td>
+                    <td>{$item['Total Sold']}</td>
+                  </tr>";
         }
+    
+        // Close the table tags
+        echo "</tbody></table>";
     
 
     }elseif($action === 'delete_p'){
@@ -206,6 +265,44 @@
         } else {
             $response = 'Failed to delete product';
         }
+    }elseif ($action === 'view_Order') {
+            // Fetch inventory from the database
+            $stmt = $conn->query("SELECT `Order No.`, `First Name`, `Last Name`, `Name of Item`, `Order Date`, `Quantity`, `Total Amount` FROM orders");
+        
+            $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+            // Start building the HTML table
+            echo "<table>
+                    <thead>
+                        <tr>
+                            <th>Order No.</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Name of Item</th>
+                            <th>Order Date</th>
+                            <th>Quantity</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>";
+        
+            // Loop through each item and display in table rows
+            foreach ($orders as $order) {
+                echo "<tr>
+                        <td>{$order['Order No.']}</td>
+                        <td>{$order['First Name']}</td>
+                        <td>{$order['Last Name']}</td>
+                        <td>{$order['Name of Item']}</td>
+                        <td>{$order['Order Date']}</td>
+                        <td>{$order['Quantity']}</td>
+                        <td>{$order['Total Amount']}</td>
+                      </tr>";
+            }
+        
+            // Close the table tags
+            echo "</tbody></table>";
+        
+    
 
     }else {
         // Invalid action
