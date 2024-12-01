@@ -1,9 +1,9 @@
 <?php
-// Creating a connection to the database 
+// Database connection details
 $host = 'localhost';
-$username = 'lab5_user'; /// replace with your username
-$password = 'password123';    //this too replave with your password
-$dbname = 'group3';// same here replace with your dbname
+$username = 'root'; 
+$password = '';   
+$dbname = 'inventory database';
 
 // Create the connection to the database
 $conn = mysqli_connect($host, $username, $password, $dbname);
@@ -14,23 +14,28 @@ if (!$conn) {
 }
 
 // Query to fetch data from the database
-$sql = "SELECT `item Name`, `Total Sold`, `Total Remaining` FROM `inventory`";
+$sql = "SELECT `Name of Item`, `Total In Stock`, `Total Sold` FROM `inventory`";
 $results = mysqli_query($conn, $sql);
 
-// th ese are the variables to hold the database data 
+// Variables to hold database data
 $labels = [];
 $soldData = [];
-$remainingData = [];
+$stockData = [];
 
-while ($row = mysqli_fetch_assoc($results)) {
-    $labels[] = $row['item Name'];
-    $soldData[] = $row['Total Sold'];
-    $remainingData[] = $row['Total Remaining'];
+if ($results) {
+    while ($row = mysqli_fetch_assoc($results)) {
+        $labels[] = $row['Name of Item'];
+        $soldData[] = (int)$row['Total Sold']; // Cast to ensure numeric data
+        $stockData[] = (int)$row['Total In Stock']; // Cast to ensure numeric data
+    }
+} else {
+    die("Query failed: " . mysqli_error($conn));
 }
 
-// Closes the connection to the database
+// Close the connection
 mysqli_close($conn);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,9 +59,9 @@ mysqli_close($conn);
      
      <!-- this represents the container for the bar chart-->
      <div class="chart-container">
-      <h1>Sales Report</h1>
+      <h3>Sales Report</h3>
         <div class="chart">
-          <span>Monthly Earning Trends</span>
+          <span>Stock Trends</span>
             <canvas id="myChart"></canvas>
         </div>
      </div>
@@ -80,84 +85,77 @@ mysqli_close($conn);
      </div>
   </div>
 
-    <script>
+  <script>
+    // Passing PHP data to JavaScript
+    const labels = <?php echo json_encode($labels); ?>;
+    const soldData = <?php echo json_encode($soldData); ?>;
+    const stockData = <?php echo json_encode($stockData); ?>;
 
-     
-        const ctx = document.getElementById('myChart');
-        const labels = <?php echo json_encode($labels); ?>;
-        const soldData = <?php echo json_encode($soldData); ?>;
-        const remainingData = <?php echo json_encode($remainingData); ?>;
-        
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['jan','feb','march','april','may','june'],
-                    datasets: [{
-                        label: '# of revenue per month',
-                        data: soldData,
-                        borderWidth: 1,
-                        backgroundColor: [
-                            'red', 'green', 'blue', 'yellow', 'purple', 'orange'
-                        ],
-                        borderColor: 'black',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
+    console.log("Labels: ", labels); // Debugging
+    console.log("Sold Data: ", soldData);
+    console.log("Stock Data: ", stockData);
 
-     
-        const ctx2 = document.getElementById('myChart2');
-        if (ctx2) {
-            new Chart(ctx2, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Revenue per Item',
-                        data: soldData,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
+    // Bar Chart
+    const ctx = document.getElementById('myChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Items in Stock',
+                    data: stockData,
+                    backgroundColor: ['red', 'green', 'blue', 'yellow', 'purple', 'orange'],
+                    borderColor: 'black',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
                 }
-            });
-        }
+            }
+        });
+    }
 
-        const ctx3 = document.getElementById('myChart3');
-        if (ctx3) {
-            new Chart(ctx3, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Revenue Breakdown',
-                        data: remainingData,  // Use remainingData for pie chart
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
+    // Line Chart
+    const ctx2 = document.getElementById('myChart2');
+    if (ctx2) {
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Sold',
+                    data: soldData,
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 0, 255, 0.1)', // Optional for better visuals
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
                 }
-            });
-        }
-    </script> 
-</body>
-</html>
+            }
+        });
+    }
+
+    // Pie Chart
+    const ctx3 = document.getElementById('myChart3');
+    if (ctx3) {
+        new Chart(ctx3, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Stock Breakdown',
+                    data: stockData,
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+</script>
